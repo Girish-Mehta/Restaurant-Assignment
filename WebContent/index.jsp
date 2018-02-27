@@ -36,7 +36,7 @@
             <a class="nav-link" href="#venue"><b>ABOUT</b></a>
           </li>
         </ul>
-        <a class="btn navbar-btn btn-secondary mx-2" href="#book"><b>Find</b></a>
+        <a class="btn navbar-btn btn-secondary mx-2" href="#restName"><b>Find</b></a>
       </div>
     </div>
   </nav>
@@ -393,30 +393,34 @@
 			var startCount = start;
 			var endCount = end;
 			results_found = jsonObj.results_found;
-			document.getElementById("searchResult").style.display = "block";
-			document.getElementById("dispRestName").innerHTML = "Restaurant Name: "+document.getElementById("restName").value;
-			document.getElementById("resultCount").innerHTML = "Found: "+results_found+" Restaurants";
-			document.getElementById("displayCount").innerHTML = "Displaying: "+startCount+"-"+endCount;
+			if(results_found > 1){
+				document.getElementById("searchResult").style.display = "block";
+				document.getElementById("dispRestName").innerHTML = "Restaurant Name: "+document.getElementById("restName").value;
+				document.getElementById("resultCount").innerHTML = "Found: "+results_found+" Restaurants";
+				document.getElementById("displayCount").innerHTML = "Displaying: "+startCount+"-"+endCount;
 
-			
-			while(i <= 5){
-				var resultList = document.createElement("div");
-				id = "curRestName"+i;
-				restName = jsonObj.restaurants[i].restaurant.name;
-				document.getElementById(id).innerHTML = restName;
-
-				id = "curRestAdd"+i;
-				address = jsonObj.restaurants[i].restaurant.location.address;
-				document.getElementById(id).innerHTML = address;
-
-				id = "curRestRat"+i;				
-				rating = jsonObj.restaurants[i].restaurant.user_rating.aggregate_rating;
-				document.getElementById(id).innerHTML = rating;
 				
-				id = "curRestVote"+i;
-				votes = jsonObj.restaurants[i].restaurant.user_rating.votes;
-				document.getElementById(id).innerHTML = votes;
-				i++;
+				while(i <= 5){
+					var resultList = document.createElement("div");
+					id = "curRestName"+i;
+					restName = jsonObj.restaurants[i].restaurant.name;
+					document.getElementById(id).innerHTML = restName;
+
+					id = "curRestAdd"+i;
+					address = jsonObj.restaurants[i].restaurant.location.address;
+					document.getElementById(id).innerHTML = address;
+
+					id = "curRestRat"+i;				
+					rating = jsonObj.restaurants[i].restaurant.user_rating.aggregate_rating;
+					document.getElementById(id).innerHTML = rating;
+					
+					id = "curRestVote"+i;
+					votes = jsonObj.restaurants[i].restaurant.user_rating.votes;
+					document.getElementById(id).innerHTML = votes;
+					i++;
+				}				
+			} else{
+				alert("No restaurants found");
 			}
 
 		}
