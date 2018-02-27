@@ -30,10 +30,10 @@
             <a class="nav-link text-light" href="#"><b>HAP</b></a>
           </li>
           <li class="nav-item mx-2">
-            <a class="nav-link" href="#menu"><b>HOME</b></a>
+            <a class="nav-link" href="#restName"><b>HOME</b></a>
           </li>
           <li class="nav-item mx-2">
-            <a class="nav-link" href="#venue"><b>ABOUT</b></a>
+            <a class="nav-link" href="#fav"><b>My Favorites</b></a>
           </li>
         </ul>
         <a class="btn navbar-btn btn-secondary mx-2" href="#restName"><b>Find</b></a>
@@ -114,7 +114,7 @@
 		   				    <p id="curRestVote1"  class="text-left"></p>				    
 					    </div>
 					</div>
-					<button type="button" class="btn btn-info" id="fav-btn-1">Add to Fav</button>
+					<button type="button" class="btn btn-info" id="fav-btn-1" onClick="addFav(this)">Add to Fav</button>
 				   </div>
 				  </div>
 				 </div>
@@ -156,7 +156,7 @@
 		   				    <p id="curRestVote2"  class="text-left"></p>				    
 					    </div>
 					</div>
-					<button type="button" class="btn btn-info" id="fav-btn-2">Add to Fav</button>
+					<button type="button" class="btn btn-info" id="fav-btn-2" onClick="addFav(this)">Add to Fav</button>
 				   </div>
 				  </div>
 				 </div>
@@ -198,7 +198,7 @@
 		   				    <p id="curRestVote3"  class="text-left"></p>				    
 					    </div>
 					</div>
-					<button type="button" class="btn btn-info" id="fav-btn-3">Add to Fav</button>
+					<button type="button" class="btn btn-info" id="fav-btn-3" onClick="addFav(this)">Add to Fav</button>
 				   </div>
 				  </div>
 				 </div>
@@ -240,7 +240,7 @@
 		   				    <p id="curRestVote4"  class="text-left"></p>				    
 					    </div>
 					</div>
-					<button type="button" class="btn btn-info" id="fav-btn-4">Add to Fav</button>
+					<button type="button" class="btn btn-info" id="fav-btn-4" onClick="addFav(this)">Add to Fav</button>
 				   </div>
 				  </div>
 				 </div>
@@ -282,7 +282,7 @@
 		   				    <p id="curRestVote5"  class="text-left"></p>				    
 					    </div>
 					</div>
-					<button type="button" class="btn btn-info" id="fav-btn-5">Add to Fav</button>
+					<button type="button" class="btn btn-info" id="fav-btn-5" onClick="addFav(this)">Add to Fav</button>
 				   </div>
 				  </div>
 				 </div>
@@ -346,6 +346,34 @@
 		var votes;
 		var start;
 		var end;
+		var restId = [];
+		
+		var addFav = function(ref){
+			var request = new XMLHttpRequest();
+			var btnId = ref.id;
+			var num = btnId[8];
+			var id = "";
+			var fav;
+			
+			id = "curRestName"+num;
+			restName = document.getElementById(id).innerHTML;
+			id = "curRestAdd"+num;
+			address = document.getElementById(id).innerHTML;
+			id = "curRestRat"+num;
+			rating = document.getElementById(id).innerHTML;
+			id = "curRestVote"+num;
+			votes = document.getElementById(id).innerHTML;
+			
+			request.open("GET", "http://localhost:8081/Restaurant-Search/indexServlet?restName="+restName+"&add="+address+"&rating="+rating+"&votes="+votes+"&restId="+restId[num-1] , true);
+	    	request.send();  
+	    }
+		
+		function getFav(){
+			var request = new XMLHttpRequest();
+			var response;
+			request.open("GET", "http://localhost:8081/Restaurant-Search/indexServlet" , true);
+	    	request.send();		
+		}
 		
 		function searchRes(){
 			start = -5;
@@ -373,14 +401,13 @@
 		function getDet(){
 			var restName = document.getElementById("restName").value;
 			var xhttp = new XMLHttpRequest();
-			var request = new XMLHttpRequest();
 			var link = "https://developers.zomato.com/api/v2.1/search?entity_id=1&entity_type=city&q="+restName+"&start="+start+"&count="+end;
 			xhttp.onreadystatechange = function() {
-        			if (this.readyState == 4 && this.status == 200) {
-					   	jsonObj = JSON.parse(this.responseText);
-					   	loadDOMResult();
-        			}
-	            };
+        		if (this.readyState == 4 && this.status == 200) {
+				   	jsonObj = JSON.parse(this.responseText);
+				   	loadDOMResult();
+        		}
+	        };
             xhttp.open("GET", link, true);
             xhttp.setRequestHeader("user-key","1d7a85cfe73734af327392ee03b102cf");
             xhttp.send();
@@ -401,7 +428,8 @@
 
 				
 				while(i <= 5){
-					var resultList = document.createElement("div");
+					console.log(jsonObj.restaurants[i].restaurant.R.res_id);
+					restId[i-1] = jsonObj.restaurants[i].restaurant.R.res_id;
 					id = "curRestName"+i;
 					restName = jsonObj.restaurants[i].restaurant.name;
 					document.getElementById(id).innerHTML = restName;
@@ -419,11 +447,13 @@
 					document.getElementById(id).innerHTML = votes;
 					i++;
 				}				
+				
+				
+				
 			} else{
 				alert("No restaurants found");
 			}
-
-		}
+		}		
 	</script>
 
   <!-- JavaScript dependencies -->
