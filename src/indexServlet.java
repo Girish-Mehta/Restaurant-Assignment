@@ -56,6 +56,9 @@ public class indexServlet extends HttpServlet{
 				Object object = parser.parse(new FileReader(this.fileName));
 				favorites = (JSONObject) object;
 				this.count = Integer.parseInt(String.valueOf(favorites.get("count")));
+				if(this.count == 5) {
+					flag = 2;
+				}
 				restaurants = (JSONArray) favorites.get("restaurants");
 				// if id exists, do not add and return error
 				for(int looper = 0; looper < this.count; looper++) {
@@ -92,11 +95,15 @@ public class indexServlet extends HttpServlet{
 				} catch(Exception e) {
 					pw.write("Unable to write json");
 				}			
-			} else {
+			} else if(flag == 1){
 				res.setContentType("application/text");
 			    res.setCharacterEncoding("UTF-8");
 				res.getWriter().write("Already in Fav List");
-			}			
+			} else if(flag == 2) {
+				res.setContentType("application/text");
+			    res.setCharacterEncoding("UTF-8");
+				res.getWriter().write("Favorite List full");
+			}
 		} else if(req.getParameter("op").equals("getFav")) {
 			try{
 				Object object = parser.parse(new FileReader(this.fileName));
