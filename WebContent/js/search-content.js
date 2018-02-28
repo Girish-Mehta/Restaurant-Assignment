@@ -109,6 +109,13 @@
 
 
 				while(i <= 5){
+					var element = document.getElementById("list-unstyled");
+					var li = document.createElement("li");
+					li.setAttribute("id","li-"+i);
+					element.appendChild(li);
+					var newCard = "<li class='my-4'><div class='card' id='card"+i+"' style='display: none;'><div class='card-body'><div class='container'><div class='row'><div class='col-sm'><p class='text-left'>Restaurant Name:</p></div><div class='col-sm col-6'><p id='curRestName"+i+"' class='text-left'></p></div></div><div class='row'><div class='col-sm'><p class='text-left'>Restaurant Address:</p></div><div class='col-sm col-6'><p id='curRestAdd"+i+"' class='text-left'></p></div></div><div class='row'><div class='col-sm'><p class='text-left' class='text-left' id='labelCurRestRat1'>Restaurant Rating:</p></div><div class='col-sm col-6'><p id='curRestRat"+i+"'  class='text-left'></p></div></div><div class='row'><div class='col-sm'><p class='text-left' class='text-left' id='labelCurRestVote1'>Restaurant Votes:</p></div><div class='col-sm col-6'><p id='curRestVote"+i+"'  class='text-left'></p></div></div><button type='button' class='btn btn-info' id='fav-btn-"+i+"' onClick='addFav(this)'>Add to Fav</button></div></div></div></li>";
+					document.getElementById("li-"+i).innerHTML = newCard;
+					
 					tempId= cardId+i;
 					document.getElementById(tempId).style.display = "block";
 					restId[i-1] = jsonObj.restaurants[i].restaurant.R.res_id;
@@ -132,7 +139,12 @@
 					document.getElementById(tempId).style.display = "block";
 					i++;
 				}				
-				
+				tempId= cardId+i;				
+				while(document.getElementById(tempId) != null){
+					tempId= cardId+i;				
+					document.getElementById(tempId).style.display = "none";
+					i++;
+				}
 				
 				
 			} else{
@@ -161,6 +173,13 @@
 				document.getElementById("outHeading").innerHTML = "Favorites";
 				
 				while(i <= results_found){
+					var element = document.getElementById("list-unstyled");
+					var li = document.createElement("li");
+					li.setAttribute("id","li-"+i);
+					element.appendChild(li);
+					var newCard = "<li class='my-4'><div class='card' id='card"+i+"' style='display: none;'><div class='card-body'><div class='container'><div class='row'><div class='col-sm'><p class='text-left'>Restaurant Name:</p></div><div class='col-sm col-6'><p id='curRestName"+i+"' class='text-left'></p></div></div><div class='row'><div class='col-sm'><p class='text-left'>Restaurant Address:</p></div><div class='col-sm col-6'><p id='curRestAdd"+i+"' class='text-left'></p></div></div><div class='row'><div class='col-sm'><p class='text-left' class='text-left' id='labelCurRestRat1'>Restaurant Rating:</p></div><div class='col-sm col-6'><p id='curRestRat"+i+"'  class='text-left'></p></div></div><div class='row'><div class='col-sm'><p class='text-left' class='text-left' id='labelCurRestVote1'>Restaurant Votes:</p></div><div class='col-sm col-6'><p id='curRestVote"+i+"'  class='text-left'></p></div></div><button type='button' class='btn btn-info' id='fav-btn-"+i+"' onClick='addFav(this)'>Add to Fav</button></div></div></div></li>";
+					document.getElementById("li-"+i).innerHTML = newCard;
+					
 					restId[i-1] = jsonObj.restaurants[i-1].id;
 					tempId= cardId+i;
 					document.getElementById(tempId).style.display = "block";
@@ -181,7 +200,7 @@
 					document.getElementById(id).innerHTML = votes;
 
 					tempId = btnId+i;
-					document.getElementById(tempId).style.display = "none";
+					document.getElementById(tempId).style.display = "none";					
 					i++;
 				}				
 				
@@ -195,3 +214,4 @@
 				alert("No Favorites");
 			}			
 		}
+				

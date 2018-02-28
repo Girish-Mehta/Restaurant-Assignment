@@ -56,7 +56,7 @@ public class indexServlet extends HttpServlet{
 				Object object = parser.parse(new FileReader(this.fileName));
 				favorites = (JSONObject) object;
 				this.count = Integer.parseInt(String.valueOf(favorites.get("count")));
-				if(this.count == 5) {
+				if(this.count == 10) {
 					flag = 2;
 				}
 				restaurants = (JSONArray) favorites.get("restaurants");
@@ -130,72 +130,3 @@ public class indexServlet extends HttpServlet{
 	}
 
 }
-
-
-
-
-
-
-
-//private ArrayList<String> restArray;
-//private ArrayList<ArrayList<String>> output;
-//
-//public void doGet(HttpServletRequest req,HttpServletResponse res)  throws ServletException,IOException  {  
-////	res.setContentType("text/html");    
-////	PrintWriter pw = res.getWriter();
-////	pw.println("Working");
-////	JSONParser parser = new JSONParser();
-////	try {
-////		Object obj = parser.parse(req.getParameter("jsonObj"));
-////		JSONArray result = (JSONArray)obj;
-////		restArray.add((String) result.get(0));
-////        JSONObject rests = (JSONObject)result.get(3);
-////        for(int i = 0 ; i < 5; i++) {
-////        	JSONObject det = (JSONObject)result.get(5);
-////        	restArray.add((String)det.get(0));
-////        	det= (JSONObject)result.get(8);
-////        	restArray.add((String)det.get(0));
-////        	restArray.add((String)det.get(3));
-////        	output.add(restArray);
-////        }
-////	} catch(ParseException pe) {
-////		pw.println("Could not parse JSON");
-////	}
-//
-//}
-//
-//
-//@Override
-//protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-//
-//	//    	PrintWriter pw = response.getWriter();
-////	JSONParser parser = new JSONParser();
-////	try {
-////		Object obj = parser.parse(jsonObj);
-////		JSONArray result = (JSONArray)obj;
-////		restArray.add((String) result.get(0));
-////        JSONObject rests = (JSONObject)result.get(3);
-////        for(int i = 0 ; i < 5; i++) {
-////        	JSONObject det = (JSONObject)result.get(5);
-////        	restArray.add((String)det.get(0));
-////        	det= (JSONObject)result.get(8);
-////        	restArray.add((String)det.get(0));
-////        	System.out.println((String)det.get(0));
-////        	restArray.add((String)det.get(3));
-////        	output.add(restArray);
-////        }
-////	} catch(ParseException pe) {
-////		pw.println("Could not parse JSON");
-////	}
-////	System.out.println("Completed");
-//	
-////	System.out.println(request.));
-//	
-//	
-//// 	var response= JSON.stringify(result);
-////	request.open("POST", "http://localhost:8081/Restaurant-Search/indexServlet?jdata" , true);
-////	request.send(response);        			
-//
-//	
-////	request.getRequestDispatcher("/fav.jsp").forward(request, response);
-//}
