@@ -32,60 +32,88 @@ public class indexServlet extends HttpServlet{
 	
 	@Override
 	public void doGet(HttpServletRequest req,HttpServletResponse res)  throws ServletException,IOException  {  
-		int flag = 0;
-		
-		this.count = 0;
-		this.id = Integer.parseInt(req.getParameter("restId"));
-		this.name = req.getParameter("restName");
-		this.address = req.getParameter("add");
-		this.rating = Double.parseDouble(req.getParameter("rating"));
-		this.votes = Integer.parseInt(req.getParameter("votes"));
-		
 		JSONParser parser = new JSONParser();
-
-		PrintWriter pw = res.getWriter();
 
 		JSONObject favorites = new JSONObject();
 		JSONArray restaurants = new JSONArray();
 		JSONObject restaurant = new JSONObject();
 
-		try{
-			Object object = parser.parse(new FileReader(this.fileName));
-			favorites = (JSONObject) object;
-			this.count = Integer.parseInt(String.valueOf(favorites.get("count")));
-			restaurants = (JSONArray) favorites.get("restaurants");
-			// if id exists, do not add and return error
-			for(int looper = 0; looper < this.count; looper++) {
-				restaurant = (JSONObject) restaurants.get(looper);
-				if(String.valueOf(restaurant.get("id")).equals(String.valueOf(this.id))) {
-					flag = 1;
-					break;
+		String result = "";
+		if(req.getParameter("op").equals("putFav")) {
+			int flag = 0;
+			this.count = 0;
+			this.id = Integer.parseInt(req.getParameter("restId"));
+			this.name = req.getParameter("restName");
+			this.address = req.getParameter("add");
+			this.rating = Double.parseDouble(req.getParameter("rating"));
+			this.votes = Integer.parseInt(req.getParameter("votes"));
+			
+
+			PrintWriter pw = res.getWriter();
+
+
+			try{
+				Object object = parser.parse(new FileReader(this.fileName));
+				favorites = (JSONObject) object;
+				this.count = Integer.parseInt(String.valueOf(favorites.get("count")));
+				restaurants = (JSONArray) favorites.get("restaurants");
+				// if id exists, do not add and return error
+				for(int looper = 0; looper < this.count; looper++) {
+					restaurant = (JSONObject) restaurants.get(looper);
+					if(String.valueOf(restaurant.get("id")).equals(String.valueOf(this.id))) {
+						flag = 1;
+						break;
+					} else {
+						// create new json object
+						restaurant = new JSONObject();
+					}
 				}
-			}
-			restaurant.clear();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-			
-		if(flag == 0) {
-			count++;
-			favorites.put("count", this.count);
-			restaurant.put("id", this.id);
-			restaurant.put("name", this.name);
-			restaurant.put("address", this.address);
-			restaurant.put("rating", this.rating);
-			restaurant.put("votes", this.votes);	
-			
-			restaurants.add(restaurant);
-			favorites.put("restaurants", restaurants);			
-			
-			try(FileWriter fw = new FileWriter(fileName)) {			
-				fw.write(favorites.toJSONString());
 			} catch(Exception e) {
-				pw.write("Unable to write json");
+				e.printStackTrace();
+			}
+			
+			if(flag == 0) {
+				count++;
+				favorites.put("count", this.count);
+				restaurant.put("id", this.id);
+				restaurant.put("name", this.name);
+				restaurant.put("address", this.address);
+				restaurant.put("rating", this.rating);
+				restaurant.put("votes", this.votes);	
+				
+				restaurants.add(restaurant);
+				favorites.put("restaurants", restaurants);			
+				
+				try(FileWriter fw = new FileWriter(fileName)) {			
+					fw.write(favorites.toJSONString());
+					res.setContentType("application/text");
+				    res.setCharacterEncoding("UTF-8");
+					res.getWriter().write("Added to Favorites List");
+				} catch(Exception e) {
+					pw.write("Unable to write json");
+				}			
+			} else {
+				res.setContentType("application/text");
+			    res.setCharacterEncoding("UTF-8");
+				res.getWriter().write("Already in Fav List");
 			}			
-		} else {
-			System.out.println("Already exists");
+		} else if(req.getParameter("op").equals("getFav")) {
+			try{
+				Object object = parser.parse(new FileReader(this.fileName));
+				favorites = (JSONObject) object;
+				this.count = Integer.parseInt(String.valueOf(favorites.get("count")));
+				restaurants = (JSONArray) favorites.get("restaurants");
+				for(int looper = 0; looper < this.count; looper++) {
+					restaurant = (JSONObject) restaurants.get(looper);
+					result = String.valueOf(restaurant.get("id"))+restaurant.get("name")+restaurant.get("address")+restaurant.get("rating")+restaurant.get("votes");
+				}
+				res.setContentType("application/json");
+			    res.setCharacterEncoding("UTF-8");
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+			res.getWriter().write(favorites.toJSONString());
 		}
 		
 	}

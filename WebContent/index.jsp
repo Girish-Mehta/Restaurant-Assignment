@@ -33,7 +33,7 @@
             <a class="nav-link" href="#restName"><b>HOME</b></a>
           </li>
           <li class="nav-item mx-2">
-            <a class="nav-link" href="#fav"><b>My Favorites</b></a>
+            <a class="nav-link" onClick="getFav()" href="#searchResult"><b>My Favorites</b></a>
           </li>
         </ul>
         <a class="btn navbar-btn btn-secondary mx-2" href="#restName"><b>Find</b></a>
@@ -63,7 +63,7 @@
     <div class="container">
       <div class="row p-4 bg-aquamarine animate-in-down" id="showRes">
         <div class="col-md-12">
-          <h2>Search Results</h2>
+          <h2 id="outHeading">Search Results</h2>
           <p class="mb-5" id="dispRestName"></p>
           <div class="container">
 		  <div class="row">
@@ -79,7 +79,7 @@
               <h5>From our lands</h5>
               <ul class="list-unstyled">
                 <li class="my-4">
-				<div class="card" id="card1">
+				<div class="card" id="card1" style="display: none;">
 				  <div class="card-body">
 				  <div class="container">
 				  	<div class="row">
@@ -121,7 +121,7 @@
 				</li>
 				
 				<li class="my-4">
-				<div class="card" id="card2">
+				<div class="card" id="card2" style="display: none;">
 				  <div class="card-body">
 				  <div class="container">
 				  	<div class="row">
@@ -163,7 +163,7 @@
 				</li>
 				
 				<li class="my-4">
-				<div class="card" id="card3">
+				<div class="card" id="card3" style="display: none;">
 				  <div class="card-body">
 				  <div class="container">
 				  	<div class="row">
@@ -205,7 +205,7 @@
 				</li>
 				
 				<li class="my-4">
-				<div class="card" id="card4">
+				<div class="card" id="card4" style="display: none;">
 				  <div class="card-body">
 				  <div class="container">
 				  	<div class="row">
@@ -247,7 +247,7 @@
 				</li>
 				
 				<li class="my-4">
-				<div class="card" id="card5">
+				<div class="card" id="card5" style="display: none;">
 				  <div class="card-body">
 				  <div class="container">
 				  	<div class="row">
@@ -290,10 +290,10 @@
 				
               </ul>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-6" id="btn-prev">
             	<a href="#searchResult"><button type="submit" class="btn mt-4 btn-block p-2 btn-primary" onClick="previous()"><b>HAP Back</b></button></a>
 			</div>
-			<div class="col-md-6">
+			<div class="col-md-6" id="btn-next">
             	<a href="#searchResult"><button type="submit" class="btn mt-4 btn-block p-2 btn-primary" onClick="next()"><b>HAP Ahead</b></button></a>
 			</div>
           </div>
@@ -364,15 +364,28 @@
 			id = "curRestVote"+num;
 			votes = document.getElementById(id).innerHTML;
 			
-			request.open("GET", "http://localhost:8081/Restaurant-Search/indexServlet?restName="+restName+"&add="+address+"&rating="+rating+"&votes="+votes+"&restId="+restId[num-1] , true);
+			request.open("GET", "http://localhost:8081/Restaurant-Search/indexServlet?op=putFav&restName="+restName+"&add="+address+"&rating="+rating+"&votes="+votes+"&restId="+restId[num-1] , true);
 	    	request.send();  
-	    }
+
+			request.onreadystatechange = function() {
+        		if (this.readyState == 4 && this.status == 200) {
+        			alert(this.responseText);
+        		}
+			};
+		}
 		
 		function getFav(){
 			var request = new XMLHttpRequest();
 			var response;
-			request.open("GET", "http://localhost:8081/Restaurant-Search/indexServlet" , true);
+			request.open("GET", "http://localhost:8081/Restaurant-Search/indexServlet?op=getFav" , true);
 	    	request.send();		
+	    	
+			request.onreadystatechange = function() {
+        		if (this.readyState == 4 && this.status == 200) {
+        			jsonObj = JSON.parse(this.responseText);
+					loadDOMFav();
+        		}
+			};
 		}
 		
 		function searchRes(){
@@ -417,8 +430,11 @@
 		function loadDOMResult(){
 			var i = 1;
 			var id = "";
+			var cardId = "card";
 			var startCount = start;
 			var endCount = end;
+			var tempId = "";
+			var btnId = "fav-btn-";
 			results_found = jsonObj.results_found;
 			if(results_found > 1){
 				document.getElementById("searchResult").style.display = "block";
@@ -426,9 +442,15 @@
 				document.getElementById("resultCount").innerHTML = "Found: "+results_found+" Restaurants";
 				document.getElementById("displayCount").innerHTML = "Displaying: "+startCount+"-"+endCount;
 
-				
+				document.getElementById("btn-next").style.display = "block";
+				document.getElementById("btn-prev").style.display = "block";
+				document.getElementById("outHeading").innerHTML = "Search Results";
+				document.getElementById("dispRestName").style.display = "block";
+
+
 				while(i <= 5){
-					console.log(jsonObj.restaurants[i].restaurant.R.res_id);
+					tempId= cardId+i;
+					document.getElementById(tempId).style.display = "block";
 					restId[i-1] = jsonObj.restaurants[i].restaurant.R.res_id;
 					id = "curRestName"+i;
 					restName = jsonObj.restaurants[i].restaurant.name;
@@ -445,6 +467,9 @@
 					id = "curRestVote"+i;
 					votes = jsonObj.restaurants[i].restaurant.user_rating.votes;
 					document.getElementById(id).innerHTML = votes;
+
+					tempId = btnId+i;
+					document.getElementById(tempId).style.display = "block";
 					i++;
 				}				
 				
@@ -453,7 +478,63 @@
 			} else{
 				alert("No restaurants found");
 			}
-		}		
+		}	
+		
+		function loadDOMFav(){
+			var i = 1;
+			var id = "";
+			var cardId = "card";
+			var tempId = "";
+			var startCount = start;
+			var endCount = end;
+			var btnId = "fav-btn-";
+			results_found = jsonObj.count;
+			if(results_found > 1){
+				document.getElementById("searchResult").style.display = "block";
+				document.getElementById("dispRestName").innerHTML = "Restaurant Name: "+document.getElementById("restName").value;
+				document.getElementById("resultCount").innerHTML = "";
+				document.getElementById("displayCount").innerHTML = "Displaying: "+results_found+" results";
+
+				document.getElementById("btn-next").style.display = "none";
+				document.getElementById("btn-prev").style.display = "none";
+				document.getElementById("dispRestName").style.display = "none";
+				document.getElementById("outHeading").innerHTML = "Favorites";
+				
+				while(i <= results_found){
+					restId[i-1] = jsonObj.restaurants[i-1].id;
+					tempId= cardId+i;
+					document.getElementById(tempId).style.display = "block";
+					id = "curRestName"+i;
+					restName = jsonObj.restaurants[i-1].name;
+					document.getElementById(id).innerHTML = restName;
+
+					id = "curRestAdd"+i;
+					address = jsonObj.restaurants[i-1].address;
+					document.getElementById(id).innerHTML = address;
+
+					id = "curRestRat"+i;				
+					rating = jsonObj.restaurants[i-1].rating;
+					document.getElementById(id).innerHTML = rating;
+					
+					id = "curRestVote"+i;
+					votes = jsonObj.restaurants[i-1].votes;
+					document.getElementById(id).innerHTML = votes;
+
+					tempId = btnId+i;
+					document.getElementById(tempId).style.display = "none";
+					i++;
+				}				
+				
+				while(i <= 5){
+					tempId= cardId+i;
+					document.getElementById(tempId).style.display = "none";
+					i++;
+				}
+				
+			} else {
+				alert("No Favorites");
+			}			
+		}
 	</script>
 
   <!-- JavaScript dependencies -->
